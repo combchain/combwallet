@@ -1,2 +1,6 @@
 # combwallet
-Mist. Browse and use Ðapps on the combchain network.
+web wallet of combchain.
+- send transaction
+- transaction history
+- comb realtime price from exchange
+- wallet management
