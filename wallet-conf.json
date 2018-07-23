@@ -1,0 +1,115 @@
+{
+  "project_name": "comb",
+  "version": "v0.1 Beta",
+  "desktop_version": "v0.1",
+  "date": "2018-7-21 12:00",
+  "domain": "http://wallet.combchain.net",
+  "bbs_url": "https://forum.combchain.net/",
+  "explorer_url": "http://info.combchain.net/",
+  "explorer_search_path": "tx/",
+  "api_url": {
+
+  },
+  "host_info": [
+    [
+      {
+        "hostName": "CombChain-01",
+        "hostProvider": "CombChain",
+        "restapi_host": "https://srv1.CombChain.net",
+        "restapi_port": "10443",
+        "webapi_host": "http://srv1.CombChain.net",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "CombChain-02",
+        "hostProvider": "CombChain",
+        "restapi_host": "https://srv2.CombChain.net",
+        "restapi_port": "10443",
+        "webapi_host": "http://srv2.CombChain.net",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "CombChain-03",
+        "hostProvider": "CombChain",
+        "restapi_host": "https://srv3.CombChain.net",
+        "restapi_port": "10443",
+        "webapi_host": "http://srv3.CombChain.net",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "CombChain-04",
+        "hostProvider": "CombChain",
+        "restapi_host": "https://srv4.CombChain.net",
+        "restapi_port": "10443",
+        "webapi_host": "http://srv4.CombChain.net",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "CombChain-05",
+        "hostProvider": "CombChain",
+        "restapi_host": "https://srv5.CombChain.net",
+        "restapi_port": "10443",
+        "webapi_host": "http://srv5.CombChain.net",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "CombChain-06",
+        "hostProvider": "CombChain",
+        "restapi_host": "https://srv6.CombChain.net",
+        "restapi_port": "10443",
+        "webapi_host": "http://srv6.CombChain.net",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "CombChain-07",
+        "hostProvider": "CombChain",
+        "restapi_host": "https://srv7.CombChain.net",
+        "restapi_port": "10443",
+        "webapi_host": "http://srv7.CombChain.net",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "CombChain-08",
+        "hostProvider": "CombChain",
+        "restapi_host": "https://srv8.CombChain.net",
+        "restapi_port": "10443",
+        "webapi_host": "http://srv8.CombChain.net",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "CombChain-09",
+        "hostProvider": "CombChain",
+        "restapi_host": "https://srv8.CombChain.net",
+        "restapi_port": "10443",
+        "webapi_host": "http://srv9.CombChain.net",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "CombChain-10",
+        "hostProvider": "CombChain",
+        "restapi_host": "https://srv10.CombChain.net",
+        "restapi_port": "10443",
+        "webapi_host": "http://srv10.CombChain.net",
+        "webapi_port": "10336",
+        "node_type": "D"
+      }
+    ]
+  ],
+  "tx_types": [
+    [
+      {
+        "name": "Transfer Asset",
+        "id": "128"
+      }
+    ]
+  ]
+}

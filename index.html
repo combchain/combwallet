@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en" ng-app="neow">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <title>{{ 'SITE_TITLE' | translate }}</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="apple-touch-icon" href="static/icon/Wallet_my_zzt.png" />
+    <link rel="icon" href="static/icon/Wallet_my_zzt.png" type="image/x-icon" />
+    <link rel="shortcut icon" href="static/icon/Wallet_my_zzt.png" type="image/x-icon" />
+    <!-- CSS -->
+    <link rel="stylesheet" href="static/css/google-font.css" />
+    <link rel="stylesheet" href="static/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="static/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="static/css/wallet.min.css?20171124-1" />
+    <!-- Javascript -->
+    <script src="https://cdn.bootcss.com/modernizr/2.8.3/modernizr.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
+    <script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;}</script>
+    <script src="static/js/vendor/plugins.js"></script>
+    <script src="static/js/vendor/yanue.pop.js"></script>
+    <script src="https://cdn.bootcss.com/angular.js/1.6.4/angular.min.js"></script>
+    <script src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate.min.js"></script>
+    <script src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
+    <script src="https://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.bootcss.com/sql.js/0.4.0/js/sql.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
+    <!--<script src="http://code.highcharts.com/highcharts.js"></script>-->
+    <script src="static/js/vendor/CryptoJS/sha256.js"></script>
+    <script src="static/js/vendor/CryptoJS/ripemd160.js"></script>
+    <script src="static/js/vendor/CryptoJS/aes.js"></script>
+    <script src="static/js/vendor/CryptoJS/pad-nopadding.js"></script>
+    <script src="static/js/vendor/highcharts.js"></script>
+    <script src="static/js/vendor/decimal-7.3.0.min.js"></script>
+    <!--<script src="static/js/vendor/sm.js"></script>-->
+    <script src="static/js/vendor/ecdsa_bundle.js"></script>
+    <script src="static/js/vendor/secp256k1_bundle.js"></script>
+    <script src="static/js/wallet.min.js?20171124-1"></script>
+    <script src="app.js?20171124-1"></script>
+    <script language="javascript">
+      function setTabFromURL() {
+        $(function() {
+          $.ajax({
+            type: "get",
+            url: "https://dnacms.guoxiaojie.org/api/v1/intelligence",
+            async: true,
+            success: function(res) {
+              var Notice = res.data.data;
+              var title = Notice[0].title;
+              var summary = Notice[0].summary;
+              //The message of pop
+              var pop=new Pop(title,summary);
+            }
+          });
+        });
+
+        var url = document.location.toString();
+        if (url.match('#')) {
+          $('#mainTab a[href="#'+url.split('#')[1]+'"]').tab('show');
+        }
+      }
+      window.onload = setTabFromURL;
+    </script>
+</head>
+<body ng-controller="WalletCtrl" ng-init="init()">
+<!--Notice Board -->
+<div id="pop" style="display:none;	">
+    <div id="popHead">
+        <a id="popClose" title="Close">{{ 'CLOSE' | translate }}</a>
+        <h2>{{ 'REMEMBER' | translate }}</h2>
+    </div>
+    <div id="popContent">
+        <dl>
+            <dt id="popTitle">
+                <a ng-click="showNoticeCenterTab()" target="_blank">Here is title</a>
+            </dt>
+            <dd id="popIntro">
+                Here is a brief introduction of the content
+            </dd>
+        </dl>
+        <p id="popMore"><a ng-click="showNoticeCenterTab()" target="_blank">{{ 'CHECK' | translate }}</a></p>
+    </div>
+</div>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+<header>
+    <div class="navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <ul class="nav navbar-nav navbar-left">
+                    <li>
+                        <a href="#" ng-click="goToHome()">
+                            <i class="fa fa-home" aria-hidden="true"></i>&nbsp;&nbsp;{{ 'SITE_TITLE' | translate }}
+                        </a>
+                    </li>
+                    <li> <a style="color: white;">{{version}}</a> </li>
+                </ul>
+            </div>
+            <div class="navbar-collapse collapse" id="navbar-main">
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown"> <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;&nbsp; {{ 'DOWNLOADS' | translate }} <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li ng-repeat="dl in downloads"><a href="#" ng-click="changeDownloadSelectIndex(dl)">{{dl.name + '-' + desktopVersion}}</a></li>
+                        </ul>
+                    </li>
+                    <li> <a target="_blank" href="{{bbsUrl}}"><i class="fa fa-coffee" aria-hidden="true"></i>&nbsp;&nbsp; {{ 'FEEDBACK' | translate }}</a> </li>
+                    <li> <a href="#" ng-click="changeLangSelectIndex()"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;&nbsp; {{langs[langSelectIndex].name}}</a> </li>
+                    <li class="dropdown"> <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-bars" aria-hidden="true"></i>&nbsp;&nbsp;<span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li ng-repeat="setting in settings"><a href="#" ng-click="changeSettingSelectIndex(setting)" value="{{setting.name}}">{{setting.name | translate}}</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- Main Page -->
+<div class="container main" ng-show="showAllMainPage">
+    <br />
+    <div class="row" ng-show="showOpenWallet">
+        <!-- Column 1 - Select Type of Key -->
+        <br />
+        <div class="col-lg-8 col-md-8 col-sm-8">
+            <!-- fileupload -->
+            <div id="fileupload" ng-if="walletType=='fileupload'">
+                <div style="display: flex;align-items: flex-end">
+                    <div class="col-lg-6 col-md-6 col-sm-6 ">
+                        <h3 translate="OPEN_WALLET">Open Wallet</h3>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6 row" id="chooseGenerateWallet" style="display:inline-block;text-align:right ">
+                        <a class="btn btn-link " style="font-size: 15px;color:#000000" ng-click="showGenerateNewWalletFromPrivateKey()" translate="RECOVERY_WALLET">Recovery Wallet</a>
+                        <a class="btn btn-link " style="font-size: 15px;color:#000000" ng-click="showGenerateNewWalletFromRandom()" translate="GENERATE_WALLET">Generate New Wallet</a>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="line"></div>
+                    <!--<h4 translate="SELECT_YOUR_WALLET_FILE">Select Your Wallet File</h4>-->
+                    <input style="display:none;" type="file" on-read-file="showContent($wallet)" id="fselector" />
+                    <button class="btn btn-info btn-block" style="margin-top: 20px;" ng-click="openFileDialog()" translate="BTN_SELECT_WALLET_FILE">Select Wallet File...</button>
+                    <div ng-if="requirePass" class="form-group has-success">
+                        <label class="control-label" translate="MT_YOUR_WALLET_IS_ENCRYPTED">Your wallet is encrypted. Please enter the password:</label>
+                        <input class="form-control show-password" ng-change="onFilePassChange()" ng-model="$parent.$parent.filePassword" placeholder="{{ 'PASSWORD' | translate }}" type="text" onfocus="this.type='password'" autocomplete="off" />
+                    </div>
+                    <div ng-if="showBtnUnlock">
+                        <h4 translate="UNLOCK_YOUR_WALLET">Unlock your wallet</h4>
+                        <button class="btn btn-info btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock</button>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12 row" ng-if="showBtnUnlock" style="display: flex;align-items: flex-end">
+                        <p translate="FORGOT_PASSWORD" style="font-size: 18px">Lost File?/Forgot Password?</p>
+                        <a class="btn btn-link " style="font-size: 18px;color:#3498DB;padding: -15px 0px;" ng-click="showGenerateNewWalletFromPrivateKey()" translate="RECOVERY_WALLET">Recovery Wallet</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- #generateWallet tab-->
+    <div class="row" id="generateWallet" ng-show="showGenerateWallet" ng-controller="GenerateWalletCtrl">
+        <br />
+        <!-- Column 1 - Select Type of Key -->
+        <div class=" col-lg-8 col-md-8 col-sm-8">
+            <div class="form-group" ng-show="showCreateWallet">
+                <div class="page-header" ng-show="showGenerateWalletFromRandom">
+                    <div style="display: flex;align-items: flex-end">
+                        <div class="col-lg-8 col-md-8 col-sm-8 ">
+                            <h3 translate="GENERATE_WALLET">Generate Wallet</h3>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 row text-right" style="display:inline-block">
+                            <div class="col-lg-4 col-md-4 col-sm-4 navbar-right ">
+                                <a class="btn btn-link " style="font-size: 15px;color:#000000" ng-click="returnGenerateWalletFromRandom()" translate="RETURN">Return</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="line"></div>
+                        <br />
+                        <!-- password confirm -->
+                        <div class="form-group {{styleStringOfCreatePassword1}}">
+                            <label class="control-label" translate="ENTER_PWD_1">Enter a strong password (at least 8 characters):</label>
+                            <br />
+                            <div class="input-group">
+                                <input ng-if="!isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="password" onfocus="this.type='password'" autocomplete="off" />
+                                <input ng-if="isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="text" />
+                                <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPassword"> <button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp;&nbsp;<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;&nbsp;</button> </span>
+                                <span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPassword"> <button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp;&nbsp;<i class="fa fa-eye-slash" aria-hidden="true"></i>&nbsp;&nbsp;</button> </span>
+                            </div>
+                        </div>
+                        <div class="form-group {{styleStringOfCreatePassword2}}">
+                            <label class="control-label" translate="RE_ENTER_PASSWORD">Re-Enter password:</label>
+                            <input ng-if="!isDisplayPassword" class="form-control " ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="password" onfocus="this.type='password'" autocomplete="off" />
+                            <input ng-if="isDisplayPassword" class="form-control " ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="text" />
+                        </div>
+                        <div id="fromRandomPrivateKey">
+                            <br />
+                            <div class="form-group" ng-if="showBtnGenerateWallet">
+                                <button class="btn btn-info btn-block" ng-click="generateWalletFileFromRandomPrivateKey()" translate="GENERATE_WALLET">Generate Wallet</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="page-header" ng-show="showGenerateWalletFromPrivateKey">
+                    <div style="display: flex;align-items: flex-end">
+                        <div class="col-lg-8 col-md-8 col-sm-8 ">
+                            <h3 translate="RECOVERY_WALLET">Recovery Wallet</h3>
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-sm-4 row text-right" style="display:inline-block">
+                            <div class="col-lg-4 col-md-4 col-sm-4 navbar-right ">
+                                <a class="btn btn-link " style="font-size: 15px;color:#000000" ng-click="returnGenerateWalletFromPrivateKey()" translate="RETURN">Return</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-sm-12">
+                        <div class="line"></div>
+                        <br />
+                        <!-- password confirm -->
+                        <div class="form-group {{styleStringOfCreatePassword1}}">
+                            <label class="control-label" translate="ENTER_PWD_1">Enter a strong password (at least 8 characters):</label>
+                            <br />
+                            <div class="input-group">
+                                <input ng-if="!isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="password" onfocus="this.type='password'" autocomplete="off" />
+                                <input ng-if="isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="text" />
+                                <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPassword"> <button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp;&nbsp;<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;&nbsp;</button> </span>
+                                <span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPassword"> <button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp;&nbsp;<i class="fa fa-eye-slash" aria-hidden="true"></i>&nbsp;&nbsp;</button> </span>
+                            </div>
+                        </div>
+                        <div class="form-group {{styleStringOfCreatePassword2}}">
+                            <label class="control-label" translate="RE_ENTER_PASSWORD">Re-Enter password:</label>
+                            <input ng-if="!isDisplayPassword" class="form-control " ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="password" onfocus="this.type='password'" autocomplete="off" />
+                            <input ng-if="isDisplayPassword" class="form-control " ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="text" />
+                        </div>
+                        <!-- fromPrivateKey -->
+                        <div id="fromPrivateKey">
+                            <div class="form-group">
+                                <label class="control-label" translate="GW_PASTE_YOUR_PRIVATE_KEY">Paste Your Private Key:</label>
+                                <input class="form-control" type="text" ng-model="privateKey" placeholder="" aria-label="" />
+                            </div>
+                            <div class="form-group" ng-if="showBtnGenerateWallet">
+                                <button class="btn btn-info btn-block" ng-click="generateWalletFileFromPrivateKey()" translate="GENERATE_WALLET">Generate Wallet</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-show="showCreateWalletDownload">
+            <div class="col-lg-12 col-md-12 col-sm-12">
+                <br />
+                <br />
+                <br />
+                <h4 translate="GW_SAVE_WALLET_FILE">1. Save your Wallet File encrypted by your password.</h4>
+                <div class="form-group">
+                    <a tabindex="0" role="button" class="btn btn-info btn-block" href="{{objectURL}}" download="wallet--{{objectName}}.db3" ng-click="downloaded()" translate="DOWNLOAD">Download</a>
+                </div>
+                <br />
+                <h4 translate="GW_YOUR_PRIVATE_KEY">2. Your Private Key, Please keep it safe.</h4>
+                <div class="form-group">
+                    <div class="input-group">
+                        <label for="privateKey"></label>
+                        <input ng-if="!isDisplayPrivateKey" class="form-control" type="password" ng-model="privateKey" id="privateKey" name="privateKey" readonly="readonly" aria-label="privateKey" />
+                        <label for=""></label>
+                        <input ng-if="isDisplayPrivateKey" class="form-control" type="text" ng-model="privateKey" id="" name="privateKey" readonly="readonly" aria-label="privateKey" />
+                        <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPrivateKey"> <button type="button" class="btn btn-default" ng-click="changeDisplayPrivateKey()">&nbsp;&nbsp;<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;&nbsp;</button> </span>
+                        <span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPrivateKey"> <button type="button" class="btn btn-default" ng-click="changeDisplayPrivateKey()">&nbsp;&nbsp;<i class="fa fa-eye-slash" aria-hidden="true"></i>&nbsp;&nbsp;</button> </span>
+                        <input class="form-control" type="hidden" id="key" name="key" readonly="readonly" aria-label="key" />
+                    </div>
+                </div>
+                <br />
+                <h4 translate="GW_YOUR_ADDRESS">3. Your address.</h4>
+                <div class="form-group">
+                    <input class="form-control" type="text" ng-model="address" id="address" name="address" readonly="readonly" />
+                </div>
+                <br />
+                <div class="form-group" ng-if="fileDownloaded">
+                    <button class="btn btn-default btn-block" ng-click="nextstep()" translate="GW_NEXT_STEP">Next Step: Make Transaction</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- main -->
+    <div class="tab-content " ng-show="showWalletMainPager">
+        <!-- #sendTransaction tab-->
+        <div class="tab-pane fade active in row" id="sendTransaction" ng-show="showTransaction">
+            <div class="row">
+                <!-- transaction -->
+                <div class="col-lg-7 col-md-7 col-sm-7">
+                    <h3 translate="NAME">IPT Wallet</h3>
+                    <br />
+                    <div class="form-group">
+                        <h4 class="control-label" translate="ADDRESS">My Address </h4>
+                        <div class="line"></div>
+                    </div>
+                    <div>
+                        <div class="form-group col-lg-8 col-md-8 col-sm-8">
+                            <span id="walletAddress" style="font-family: 'Verdana','Montserrat', 'Helvetica', sans-serif !important;">{{accounts[accountSelectIndex].address}}</span>
+                        </div>
+                        <div class="text-right col-lg-4 col-md-4 col-sm-4 text-right">
+                            <button class="btn copy-btn btn-info btn-xs" data-clipboard-text="{{accounts[accountSelectIndex].address}}" translate="MT_COPY_ADDRESS">Copy Address</button>
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+                    <h4 class="control-label" translate="ASSETNAME">My Asset </h4>
+                    <div class="line"></div>
+                    <div class="form-group">
+                        <table class="table table-striped table-hover" style="font-family: 'Verdana','Montserrat', 'Helvetica', sans-serif !important;">
+                            <thead>
+                            <tr>
+                                <th><b>{{ 'ASSETNAME' | translate }}</b></th>
+                                <th><b>{{ 'ASSETID' | translate }}</b></th>
+                                <th><b>{{ 'BALANCE' | translate }}</b></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="coin in coins|limitTo: 2">
+                                <td>{{coin.AssetName}}</td>
+                                <td>{{coin.AssetID.substr(0,5) + &quot;...&quot; + coin.AssetID.substr(59)}}</td>
+                                <td>{{coin.balanceViewFormat}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div ng-show="showMoreAssetButton">
+                            <button class="btn copy-btn btn-info btn-xs" ng-click="showAllAssestMsgTab()" translate="CHECK_MORE">Check More</button>
+                        </div>
+                        <div ng-show="showNoAsset" style="text-align:center">
+                            <br />
+                            <p translate="NO_ASSET_RECORD">No Asset Record</p>
+                            <br />
+                            <br />
+                        </div>
+                        <div ng-show="showOnlyOneAsset">
+                            <br />
+                            <br />
+                        </div>
+                    </div>
+                    <br />
+                    <h4 translate="TRANSFER_ACCOUNTS">Transfer accounts </h4>
+                    <div class="line"></div>
+                    <br />
+                    <!-- Transfer Transaction -->
+                    <div ng-if="txType==128">
+                        <div class="form-group">
+                            <label class="control-label" translate="MT_TO_ADDRESS">To Address</label>
+                            <input class="form-control" ng-model="Transaction.ToAddress" name="toAddress" placeholder="{{ 'ADDRESS' | translate }} ..." type="text" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" translate="MT_AMOUNT_TO_SEND">Amount to Send</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" ng-model="Transaction.Amount" name="Amount" value="" placeholder="{{ 'AMOUNT' | translate }}" aria-label="amount" />
+                                <div class="input-group-btn">
+                                    <button type="button" style="min-width: 158px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{coins[coinSelectIndex].AssetName}}&nbsp;&nbsp;<span class="caret"></span></button>
+                                    <ul class="dropdown-menu dropdown-menu-right">
+                                        <li ng-repeat="coin in coins"><a data-toggle="tab" href="#" ng-click="changeCoinSelectIndex($index)">{{coin.AssetName}}</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <br />
+                            <button class="btn btn-info btn-block" ng-click="openModal()" ng-disabled="!Transaction.able" translate="BTN_TRANSFER_TRANSACTION">Transfer Transaction</button>
+                        </div>
+                        <div class="form-group" ng-show="waitingSecond">
+                            <label class="control-label" translate="MT_PLEASE_WAITING">Please waiting for</label>
+                            <span>{{countdown}}</span>
+                            <label class="control-label" translate="MT_SECOND">s</label>
+                            <br />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-5 col-md-5 col-sm-5">
+                    <br />
+                    <!-- chart info -->
+                    <div id="HighChartTable"></div>
+
+                    <!-- #transactionRecord tab-->
+                    <div id="transactionRecordList">
+                        <hr />
+                        <h4 translate="TRANSACTION_RECORD">Transaction Record </h4>
+                        <table class="table table-striped table-hover" style="font-family: 'Verdana','Montserrat', 'Helvetica', sans-serif !important;">
+                            <thead>
+                            <tr>
+                                <th><b>{{ 'TRANSACTION_HASH' | translate }}</b></th>
+                                <th><b>{{ 'PRICE' | translate }}</b></th>
+                                <th><b>{{ 'TIME' | translate }}</b></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr ng-repeat="transactionRecord in transactionRecords|limitTo: 4">
+                                <td>
+                                    <a class="btn btn-link " ng-click="openTransactionBrower(transactionRecord.hash)" style="color:#000000;padding: 0;">
+                                        {{transactionRecord.hash.substring(0, 5) + &quot;...&quot; + transactionRecord.hash.substring(59)}}
+                                    </a>
+                                </td>
+                                <td>{{transactionRecord.price.substring(0,8)}}</td>
+                                <td>{{transactionRecord.time}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div ng-show="showTransactionRecordButton">
+                            <button class="btn copy-btn btn-info btn-xs" ng-click="showTransactionRecordTab()" translate="CHECK_MORE">Check More</button>
+                        </div>
+                        <div ng-show="showNoTransactionRecord" style="text-align:center">
+                            <br />
+                            <p translate="NO_TRANSACTION_RECORD">No Transaction Record</p>
+                            <br />
+                            <br />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- #All assest msg -->
+        <div id="AllAssestMsg" ng-show="showAllAssestMsg">
+            <div style="display: flex;align-items: flex-end">
+                <div class="col-lg-8 col-md-8 col-sm-8 ">
+                    <h3 translate="ASSEST_MESSAGE">Assest Message</h3>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 row text-right" style="display:inline-block">
+                    <div class="col-lg-4 col-md-4 col-sm-4 navbar-right ">
+                        <a class="btn btn-link " style="font-size: 15px;color:#000000" ng-click="returnFromAllAssestMsg()" translate="RETURN">Return</a>
+                    </div>
+                </div>
+            </div>
+            <div class="line"></div>
+            <div class="form-group">
+                <table class="table table-striped table-hover" style="font-family: 'Verdana','Montserrat', 'Helvetica', sans-serif !important;">
+                    <thead>
+                    <tr>
+                        <th><b>{{ 'ASSETNAME' | translate }}</b></th>
+                        <th><b>{{ 'ASSETID' | translate }}</b></th>
+                        <th><b>{{ 'BALANCE' | translate }}</b></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="coin in coins">
+                        <td>{{coin.AssetName}}</td>
+                        <td>{{coin.AssetID}}</td>
+                        <td>{{coin.balanceViewFormat}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- #transactionRecord -->
+        <div id="transactionRecord" ng-show="showTransactionRecord">
+            <div style="display: flex;align-items: flex-end">
+                <div class="col-lg-8 col-md-8 col-sm-8 ">
+                    <h3 translate="TRANSACTION_RECORD">Transaction Record</h3>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 row text-right" style="display:inline-block">
+                    <div class="col-lg-4 col-md-4 col-sm-4 navbar-right ">
+                        <a class="btn btn-link " style="font-size: 15px;color:#000000" ng-click="returnFromTransactionRecord()" translate="RETURN">Return</a>
+                    </div>
+                </div>
+            </div>
+            <div class="line"></div>
+            <div class="form-group">
+                <table class="table table-striped table-hover" style="font-family: 'Verdana','Montserrat', 'Helvetica', sans-serif !important;">
+                    <thead>
+                    <tr>
+                        <th><b>{{ 'TRANSACTION_HASH' | translate }}</b></th>
+                        <th><b>{{ 'PRICE' | translate }}</b></th>
+                        <th><b>{{ 'TIME' | translate }}</b></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="transactionRecord in transactionRecords">
+                        <td><a class="btn btn-link " ng-click="openTransactionBrower(transactionRecord.hash)" style="color:#000000;padding: 0;">{{transactionRecord.hash}}</a></td>
+                        <td>{{transactionRecord.price}}</td>
+                        <td>{{transactionRecord.time}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
