@@ -113,6 +113,7 @@
         </div>
     </div>
 </header>
+
 <!-- Main Page -->
 <div class="container main" ng-show="showAllMainPage">
     <br />
@@ -274,6 +275,7 @@
             </div>
         </div>
     </div>
+
     <!-- main -->
     <div class="tab-content " ng-show="showWalletMainPager">
         <!-- #sendTransaction tab-->
@@ -611,6 +613,124 @@
             </div>
         </div>
     </div>
+</div>
+<!-- #Help Center -->
+<div class="container main" ng-show="showHelpCenter">
+    <br />
+    <br />
+    <div ng-show="showHelpCenterList">
+        <div style="display: flex;align-items: flex-end">
+            <div class="col-lg-8 col-md-8 col-sm-8 ">
+                <h3 translate="HELP">Help</h3>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 row text-right" style="display:inline-block">
+                <div class="col-lg-4 col-md-4 col-sm-4 navbar-right ">
+                    <a class="btn btn-link " style="font-size: 15px;color:#000000" ng-click="returnFromHelpCenter()" translate="RETURN">Return</a>
+                </div>
+            </div>
+        </div>
+        <div class="line"></div>
+        <br />
+        <ul class="list-group">
+            <li ng-repeat="helpMsg in helpMsgs" class="list-group-item"><a class="btn btn-link " style="font-size: 15px;color:#000000;padding:0px 0px" ng-click="showHelpMsg(helpMsgs.indexOf(helpMsg))">{{helpMsg.time.substring(0,11) + helpMsg.title}}</a></li>
+        </ul>
+        <br />
+        <br />
+        <div style="text-align:center">
+            <ul class="pagination">
+                <li class="page-item"> <a class="page-link" ng-click="getHelpFirstPage()">&laquo;</a> </li>
+                <li class="page-item active"> <a class="page-link" href="#">1</a> </li>
+                <li class="page-item"> <a class="page-link" ng-click="getHelpLastPage()">&raquo;</a> </li>
+            </ul>
+        </div>
+    </div>
+    <div ng-show="showHelpCenterMsg">
+        <div style="display: flex;align-items: flex-end">
+            <div class="col-lg-8 col-md-8 col-sm-8 ">
+                <h3 translate="HELP">HELP</h3>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 row text-right" style="display:inline-block">
+                <div class="col-lg-4 col-md-4 col-sm-4 navbar-right ">
+                    <a class="btn btn-link " style="font-size: 15px;color:#000000" ng-click="returnFromHelpCenterMsg()" translate="RETURN">Return</a>
+                </div>
+            </div>
+        </div>
+        <div class="line"></div>
+        <div class="form-group col-lg-1 col-md-1 col-sm-1"></div>
+        <div class="form-group col-lg-10 col-md-10 col-sm-10">
+            <h2 style="text-align:center">{{helpMsgs[helpMsgIndex].title}}</h2>
+            <p class="text-muted" style="text-align:center">{{helpMsgs[helpMsgIndex].time}}</p>
+            <div class="ng-binding" ng-bind-html="helpMsgs[helpMsgIndex].content|trustHtml"></div>
+        </div>
+        <br />
+        <br />
+        <br />
+    </div>
+</div>
+<!-- confirm Transaction Modal -->
+<script type="text/ng-template" id="myModalContent.html">
+
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">&times;</button>
+        <!--<h2 class="modal-title modal-title-warning" translate="WARNING">Warning!</h2>-->
+        <h3 class="text-info">{{ 'TX_TYPE_TRANSFER_TRANSACTION' | translate }}</h3>
+    </div>
+
+    <div class="modal-body" ng-if="txType==128" >
+        <p>{{ 'MT_TO_ADDRESS' | translate }}: <b>{{ToAddress}}</b></p>
+        <hr />
+        <p>{{ 'AMOUNT' | translate }}: <b>{{ValueView}}</b></p>
+        <p>{{ 'ASSETNAME' | translate }}: <b>{{AssetName}}</b></p>
+        <p>{{ 'ASSETID' | translate }}: <b>{{AssetIDRev.substr(0,5) + &quot;...&quot; + AssetIDRev.substr(59)}}</b></p>
+        <p>{{ 'MT_FROM_ADDRESS' | translate }}: <b>{{FromAddress}}</b></p>
+        <p ng-if="txModify" class="text-danger">{{ 'MT_MODAL_DANGER_1' | translate }}</p>
+        <hr />
+        <p>
+            {{ 'MT_YOU_ARE_CONNECTED_TO_NODE' | translate }}: <b>{{hostInfo[hostSelectIndex].hostName}}</b> ; &nbsp; {{ 'MT_PROVIDED_BY' | translate }}: <b>{{hostInfo[hostSelectIndex].hostProvider}} ; &nbsp; </b>
+            <b>{{ 'MT_ARE_YOU_SURE_TO_SEND_TRANSACTION' | translate }}</b>
+        </p>
+    </div>
+
+    <div class="modal-body" ng-if="txType==2" >
+        <p>{{ 'AMOUNT' | translate }}: <b>{{Value/100000000}}</b></p>
+        <p>{{ 'ASSETNAME' | translate }}: <b>{{AssetName}}</b></p>
+        <p>{{ 'ASSETID' | translate }}: <b>{{AssetID.substr(0,5) + &quot;...&quot; + AssetID.substr(59)}}</b></p>
+        <p>{{ 'TX_CL_CLAIM_ADDRESS' | translate }}: <b>{{ClaimAddress}}</b></p>
+        <p ng-if="txModify" class="text-danger">{{ 'MT_MODAL_DANGER_1' | translate }}</p>
+        <hr />
+        <p>
+            {{ 'MT_YOU_ARE_CONNECTED_TO_NODE' | translate }}: <b>{{hostInfo[hostSelectIndex].hostName}}</b> ; &nbsp; {{ 'MT_PROVIDED_BY' | translate }}: <b>{{hostInfo[hostSelectIndex].hostProvider}} ; &nbsp; </b>
+            <b>{{ 'MT_ARE_YOU_SURE_TO_SEND_TRANSACTION' | translate }}</b>
+        </p>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">{{ 'BTN_NO_LET_ME_THINK' | translate }}</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="ok()" ng-if="txModify" disabled="disabled">{{ 'BTN_YES_SURE' | translate }}</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="ok()" ng-if="!txModify">{{ 'BTN_YES_SURE' | translate }}</button>
+    </div>
+
+</script>
+<!-- confirm Transaction Modal -->
+<script type="text/ng-template" id="timeoutView.html">
+    <div class="modal-header">
+        <h2 class="modal-title modal-title-warning" translate="WARNING">Warning!</h2>
+    </div>
+    <div class="modal-body" style="height: 320px;">
+        <p style="font-family: 'Microsoft YaHei', sans-serif;font-size: 30px;font-weight: 100; text-align: center;margin-top: 100px;">
+            {{ 'MT_REFRESH_PAGE' | translate }}
+        </p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary center-block" data-dismiss="modal" ng-click="refreshPage()">{{ 'BTN_REFRESH' | translate }}</button>
+    </div>
+</script>
+<!-- alert -->
+<div class="navbar-fixed-bottom alert popup {{notifier.class}} animated-show-hide" ng-show="notifier.show" role="alert" aria-live="assertive">
+    <button type="button" class="close" aria-label="dismiss" ng-click="notifier.close()"><i class="fa fa-times" aria-hidden="true"></i></button>
+    <i class="{{notifier.icon}}" aria-hidden="true"></i>
+    <span class="sr-only">{{notifier.class}}</span>
+    <span ng-bind-html="notifier.message"></span>
 </div>
 </body>
 </html>
